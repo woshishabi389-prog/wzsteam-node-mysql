@@ -1,0 +1,28 @@
+{
+  "name": "wzsteam-node-mysql",
+  "version": "1.0.0",
+  "description": "WZSteam 游戏商品信息管理系统（Node.js + Express + MySQL + 原生前端 API 交互）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "init-db": "node scripts/init-db.js",
+    "test": "node scripts/verify.mjs"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mysql",
+    "product-management",
+    "wzsteam"
+  ],
+  "author": "woshishabi389-prog",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  }
+}

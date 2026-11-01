@@ -1,0 +1,517 @@
+﻿/* ============================================================================
+   WZSteam 鈥?Corporate Clean 璁捐绯荤粺
+   ----------------------------------------------------------------------------
+   tokens.css      璁捐 token锛圕SS 鍙橀噺锛? Reset/Base + 灏戦噺澶嶅悎缁勪欢绫?   utilities.css   鎵嬪啓 utility 瀛愰泦锛圱ailwind 鍏煎锛岄浂鏋勫缓锛夛紝琚湰鏂囦欢 @import
+
+   椋庢牸鍩虹嚎
+     椤甸潰搴? : slate-50      鍗＄墖 : 鐧藉簳 + rounded-xl + shadow-sm + border-gray-200 + p-6
+     涓昏壊    : blue-600 / hover blue-700
+     鍦嗚    : rounded-lg / rounded-xl / rounded-full
+     闃村奖    : shadow-sm -> shadow / shadow-md锛堢瓒呭ぇ闃村奖锛?     鍔ㄦ晥    : transition-all duration-150/200 ease-out锛堢 >200ms锛?     瀛椾綋    : 绯荤粺 UI 瀛椾綋鏍堬紙绂?Inter / Roboto / Geist / 鍥炬爣瀛椾綋 / 澶栭摼 CDN锛?
+   绂佹绫伙紙瀹¤鑴氭湰纭け璐ワ紝瀹屾暣娓呭崟瑙?docs/STYLE.md 涓?scripts/style-audit.mjs锛?     鏃犲渾瑙掔被  瓒呭ぇ闃村奖  绮楄竟妗嗭紙4/8锛? 娓愬彉鑳屾櫙  闇撹櫣鏂囧瓧  姣涚幓鐠? 瑁佸垏鏂囧瓧
+     鍔ㄦ晥 >200ms  focus:ring 涓嶅甫 ring-offset-2
+     <button> 缂?active:scale-[0.98]  琛ㄥ崟鎺т欢缂?focus:ring-2/focus:ring-offset-2
+
+   鏂偣锛歮d = 768px锛宭g = 1024px锛堜笌 Tailwind 涓€鑷达級
+   ========================================================================== */
+
+@import url("./utilities.css");
+
+/* ============================================================================
+   1. 璁捐 token
+   ========================================================================== */
+:root {
+  /* 瀛椾綋鏍堬細绯荤粺 UI锛岀姝?Inter/Roboto/Geist 涓庝换浣曞閾惧瓧浣?*/
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* 涓昏壊锛堣摑锛?*/
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+  --blue-900: #1e3a8a;
+
+  /* 椤甸潰搴曡壊锛坰late锛?*/
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* 涓€ц壊锛坓ray锛?*/
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* 璇箟鑹?*/
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-200: #fecaca;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  --white: #ffffff;
+  --black: #000000;
+
+  /* 鍦嗚锛堢姝㈡棤鍦嗚绫伙級 */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* 闃村奖锛堣捣濮嬪氨鏄?sm锛岀瓒呭ぇ闃村奖锛?*/
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  /* 鍔ㄦ晥锛堜笂闄?200ms锛?*/
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 100ms;
+  --dur-base: 150ms;
+  --dur-slow: 200ms;
+
+  /* 闂磋窛鍒诲害锛?px 鍩哄噯锛?*/
+  --sp-0: 0px;
+  --sp-0_5: 0.125rem;
+  --sp-1: 0.25rem;
+  --sp-1_5: 0.375rem;
+  --sp-2: 0.5rem;
+  --sp-2_5: 0.625rem;
+  --sp-3: 0.75rem;
+  --sp-3_5: 0.875rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-7: 1.75rem;
+  --sp-8: 2rem;
+  --sp-9: 2.25rem;
+  --sp-10: 2.5rem;
+  --sp-11: 2.75rem;
+  --sp-12: 3rem;
+  --sp-14: 3.5rem;
+  --sp-16: 4rem;
+  --sp-20: 5rem;
+  --sp-24: 6rem;
+  --sp-32: 8rem;
+
+  /* 瀛楀彿 / 琛岄珮 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+
+  --lh-xs: 1rem;
+  --lh-sm: 1.25rem;
+  --lh-base: 1.5rem;
+  --lh-lg: 1.75rem;
+  --lh-xl: 1.75rem;
+  --lh-2xl: 2rem;
+  --lh-3xl: 2.25rem;
+  --lh-4xl: 2.5rem;
+  --lh-5xl: 1;
+  --lh-6xl: 1;
+
+  /* 瀹瑰櫒瀹藉害 */
+  --w-xs: 20rem;
+  --w-sm: 24rem;
+  --w-md: 28rem;
+  --w-lg: 32rem;
+  --w-xl: 36rem;
+  --w-2xl: 42rem;
+  --w-3xl: 48rem;
+  --w-4xl: 56rem;
+  --w-5xl: 64rem;
+  --w-6xl: 72rem;
+  --w-7xl: 80rem;
+
+  /* 鏂偣锛堝獟浣撴煡璇㈠唴鍐欐鏁板€硷紝杩欓噷浠呬緵鏂囨。寮曠敤锛?*/
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+
+  /* 鐒︾偣鐜?*/
+  --focus-ring-color: var(--blue-500);
+  --focus-ring-offset: 2px;
+}
+
+/* ============================================================================
+   2. Transform / Ring / Shadow 缁勫悎鍙橀噺
+   锛堥浂鏋勫缓涓嬩笉渚濊禆 Tailwind 鐨?preflight锛岃嚜宸卞０鏄庝竴浠介粯璁ゅ€硷紱
+     鎵€鏈?transform 绫诲叡鐢ㄥ悓涓€濂?translate/rotate/scale 鍙橀噺锛屼繚璇?     hover:-translate-y-0.5 涓?active:scale-[0.98] 鑳藉彔鍔犺€屼笉鏄簰鐩歌鐩栵級
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+
+  --tw-ring-inset: ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #ffffff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+
+  --tw-shadow: 0 0 #0000;
+}
+
+/* ============================================================================
+   3. Reset / Base锛堢簿绠€鐗?preflight锛?   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: var(--gray-200);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  tab-size: 4;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  background-color: var(--slate-50);
+  color: var(--gray-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(button, input, optgroup, select, textarea) {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+:where(button, [type="button"], [type="reset"], [type="submit"]) {
+  -webkit-appearance: button;
+  appearance: button;
+  background-color: transparent;
+  background-image: none;
+  cursor: pointer;
+}
+
+button:disabled,
+[disabled] {
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: vertical;
+}
+
+::placeholder {
+  color: var(--gray-400);
+  opacity: 1;
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-color: var(--gray-200);
+}
+
+table {
+  border-collapse: collapse;
+  border-color: inherit;
+  text-indent: 0;
+}
+
+summary {
+  cursor: pointer;
+}
+
+[hidden] {
+  display: none;
+}
+
+/* 閿洏鐒︾偣鍏滃簳锛氭墍鏈夊彲鑱氱劍鍏冪礌鍦?focus-visible 涓嬮兘鏈夊彲瑙佺劍鐐圭幆 */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+::selection {
+  background-color: var(--blue-100);
+  color: var(--gray-900);
+}
+
+/* ============================================================================
+   4. 澶嶅悎缁勪欢绫伙紙濂戠害 7.1 鍏佽鐨?tokens.css 鍐呭畾涔変緥澶栵級
+   --------------------------------------------------------------------------
+   涓嶈鍦ㄦā鏉块噷鍙戞槑璇箟绫诲悕锛涜繖閲屽彧鏀剧函 utility 缁勫悎闅句互琛ㄨ揪鐨勪笢瑗匡細
+   鐘舵€佸姩鐢汇€佸師鐢熸帶浠跺浘鏍囥€丣S 鐢ㄧ殑缁撴瀯鎬ч挬瀛愩€?   ========================================================================== */
+
+/* 鍔犺浇鍗犱綅锛堥厤 .animate-pulse 鎴栧崟鐙娇鐢級 */
+.skeleton {
+  border-radius: var(--radius-lg);
+  background-color: var(--gray-200);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+/* 楠ㄦ灦灞忕殑 pulse 鍔ㄧ敾锛堝鍒朵竴浠斤紝閬垮厤渚濊禆 utility 灞傦級 */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* 鏃嬭浆鍔犺浇锛堜粎鍔犺浇鎬侊紱涓嶅睘浜?hover 鍔ㄦ晥锛?s 涓嶅彈 鈮?00ms 绾︽潫锛?*/
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 鍘熺敓 select 涓嬫媺绠ご锛堥浂澶栭摼锛屽唴鑱?SVG data-uri锛?*/
+.select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+}
+
+/* Toast锛欽S 鍔ㄦ€佸垱寤猴紝閰嶅悎 [data-toast-kind] 涓婅壊 */
+.toast {
+  position: fixed;
+  right: var(--sp-4);
+  bottom: var(--sp-4);
+  z-index: 50;
+  display: inline-flex;
+  max-width: 24rem;
+  align-items: center;
+  gap: var(--sp-2);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background-color: var(--white);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--text-sm);
+  color: var(--gray-900);
+  box-shadow: var(--shadow-md);
+}
+
+[data-toast-kind="success"] {
+  border-color: var(--green-500);
+}
+
+[data-toast-kind="error"] {
+  border-color: var(--red-500);
+}
+
+[data-toast-kind="info"] {
+  border-color: var(--blue-500);
+}
+
+/* 鏈嶅姟绔覆鏌撶殑 flash 妯箙锛堥〉闈㈤《閮ㄥ唴鑱旓紝涓?JS 鍔ㄦ€?.toast 鍖哄垎锛?   妯℃澘锛?div class="flash" data-flash-kind="{{ flash.kind }}">鈥?/div> */
+.flash {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background-color: var(--white);
+  padding: var(--sp-4);
+  font-size: var(--text-sm);
+  line-height: var(--lh-normal);
+  color: var(--gray-700);
+  box-shadow: var(--shadow-sm);
+}
+
+.flash[data-flash-kind="success"] {
+  border-color: var(--green-500);
+  background-color: var(--green-50);
+}
+
+.flash[data-flash-kind="error"] {
+  border-color: var(--red-500);
+  background-color: var(--red-50);
+}
+
+.flash[data-flash-kind="info"] {
+  border-color: var(--blue-500);
+  background-color: var(--blue-50);
+}
+
+.flash .status-dot {
+  margin-top: 0.375rem;
+  flex: 0 0 auto;
+}
+
+.flash[data-flash-kind="success"] .status-dot {
+  background-color: var(--green-500);
+}
+
+.flash[data-flash-kind="error"] .status-dot {
+  background-color: var(--red-500);
+}
+
+.flash[data-flash-kind="info"] .status-dot {
+  background-color: var(--blue-500);
+}
+
+/* 闈㈠寘灞戯細鏈€鍚庝竴椤瑰悗鐨勫垎闅旂闅愯棌锛堟ā鏉垮紩鎿庝笉鏀寔 @last 鏉′欢鏃剁敤 CSS 鍏滃簳锛?*/
+.breadcrumbs li:last-child .crumb-sep {
+  display: none;
+}
+
+/* 璐墿杞﹁鏍囦负 0 鏃堕殣钘忥紙JS 鍙渶鏇存柊 data-cart-count锛?*/
+[data-cart-count="0"] {
+  display: none;
+}
+
+/* 鑲＄エ/鐘舵€佽剦鍐茬偣锛堝彲閫夛級 */
+.status-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--gray-400);
+}
+
+/* ============================================================================
+   5. 鏃犻殰纰嶏細鍑忓急鍔ㄦ晥
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  /* 鍏抽棴鎵€鏈変綅绉?/ 缂╂斁 / 鏃嬭浆锛堝惈 group-hover 浼犲鍒板瓙鍏冪礌鐨勬儏鍐碉級 */
+  :hover,
+  :active {
+    transform: none !important;
+  }
+
+  .group:hover * {
+    transform: none !important;
+  }
+
+  .animate-spin {
+    animation: none !important;
+  }
+}

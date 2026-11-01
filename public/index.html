@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品信息管理 · WZSteam 游戏商品管理系统</title>
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/utilities.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-gray-900">
+  <div class="flex min-h-screen">
+    <!-- 左侧导航栏 -->
+    <aside class="hidden w-64 shrink-0 flex-col border-r border-gray-200 bg-white lg:flex">
+      <a href="/index.html" class="flex h-16 items-center gap-2.5 border-b border-gray-100 px-6">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white font-bold shadow-sm">WZ</span>
+        <div>
+          <p class="text-base font-semibold tracking-tight text-gray-900">WZSteam 控制台</p>
+          <p class="text-xs text-gray-500">商品信息管理系统</p>
+        </div>
+      </a>
+      <nav class="flex flex-1 flex-col gap-1.5 px-3 py-5" aria-label="主导航">
+        <a href="/index.html" class="flex items-center gap-3 rounded-lg bg-blue-50 px-3.5 py-2.5 text-sm font-medium text-blue-700" aria-current="page">
+          <span>📦</span>
+          <span>商品信息管理</span>
+        </a>
+        <a href="/categories.html" class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+          <span>🗂️</span>
+          <span>商品分类管理</span>
+        </a>
+        <a href="/store.html" class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+          <span>🛍️</span>
+          <span>商城前台预览</span>
+        </a>
+      </nav>
+      <div class="border-t border-gray-100 px-4 py-4">
+        <p class="text-xs font-medium text-gray-500">数据库引擎状态</p>
+        <p id="sidebar-db-engine" class="mt-1 truncate text-xs text-blue-600 font-medium">MySQL 连接就绪</p>
+      </div>
+    </aside>
+
+    <!-- 右侧主内容区 -->
+    <div class="flex min-w-0 flex-1 flex-col">
+      <!-- 顶部栏 -->
+      <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 md:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 lg:hidden">
+            <a href="/index.html" class="rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700">商品管理</a>
+            <a href="/categories.html" class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">分类管理</a>
+            <a href="/store.html" class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">商城预览</a>
+          </div>
+          <span class="hidden text-sm text-gray-500 lg:inline">当前位置：<strong class="text-gray-900">控制台 / 商品信息管理</strong></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <p id="nav-user-name" class="text-sm font-medium text-gray-900">加载中...</p>
+            <p id="nav-user-email" class="text-xs text-gray-500"></p>
+          </div>
+          <button id="btn-logout" type="button"
+                  class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+            退出登录
+          </button>
+        </div>
+      </header>
+
+      <!-- 主体内容 -->
+      <main class="flex-1 px-4 py-6 md:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+          <!-- 标题与新增按钮 -->
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-semibold tracking-tight text-gray-900">商品信息管理</h1>
+              <p class="mt-1 text-sm text-gray-600">基于 Node.js + MySQL 实现商品数据的新增、多条件查询、修改、上下架与删除管理</p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <a href="/categories.html"
+                 class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                <span>🗂️</span>
+                <span>分类管理</span>
+              </a>
+              <button id="btn-open-create" type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
+                <span>＋</span>
+                <span>新增商品</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 顶部统计指标卡 -->
+          <section class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">商品总数</p>
+              <p id="stat-total-products" class="mt-2 text-2xl font-bold text-gray-900">--</p>
+              <p class="mt-1 text-xs text-gray-500">MySQL `products` 表记录数</p>
+            </div>
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">在售 / 下架商品</p>
+              <p class="mt-2 text-2xl font-bold text-blue-600">
+                <span id="stat-on-sale">--</span>
+                <span class="text-sm font-normal text-gray-400"> / </span>
+                <span id="stat-off-shelf" class="text-lg font-semibold text-gray-500">--</span>
+              </p>
+              <p class="mt-1 text-xs text-gray-500">支持一键切换上下架状态</p>
+            </div>
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">库存总件数</p>
+              <p id="stat-total-stock" class="mt-2 text-2xl font-bold text-gray-900">--</p>
+              <p class="mt-1 text-xs text-gray-500">可售饰品与账号总库存</p>
+            </div>
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">商品分类数 / 库存总值</p>
+              <p class="mt-2 text-2xl font-bold text-gray-900">
+                <span id="stat-total-categories">--</span> 类
+                <span id="stat-total-value" class="ml-1 text-sm font-medium text-blue-600">¥0.00</span>
+              </p>
+              <p class="mt-1 text-xs text-gray-500">关联 `categories` 分类表</p>
+            </div>
+          </section>
+
+          <!-- 多条件组合搜索栏 -->
+          <section class="mt-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <form id="search-form" class="flex flex-wrap items-end gap-3">
+              <div class="min-w-0 flex-1" style="min-width: 200px;">
+                <label for="filter-keyword" class="mb-1.5 block text-xs font-medium text-gray-700">关键词搜索</label>
+                <input id="filter-keyword" type="search" placeholder="输入商品名称、标识或简介（如 AK-47、蝴蝶刀）..."
+                       class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none">
+              </div>
+
+              <div>
+                <label for="filter-category" class="mb-1.5 block text-xs font-medium text-gray-700">商品分类</label>
+                <select id="filter-category" class="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+                  <option value="">全部分类</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="filter-game" class="mb-1.5 block text-xs font-medium text-gray-700">所属游戏</label>
+                <select id="filter-game" class="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+                  <option value="">全部游戏</option>
+                  <option value="CS2">CS2</option>
+                  <option value="Dota2">Dota2</option>
+                  <option value="Steam">Steam</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="filter-status" class="mb-1.5 block text-xs font-medium text-gray-700">销售状态</label>
+                <select id="filter-status" class="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+                  <option value="">全部状态</option>
+                  <option value="on_sale">在售中</option>
+                  <option value="off_shelf">已下架</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="filter-sort" class="mb-1.5 block text-xs font-medium text-gray-700">排序方式</label>
+                <select id="filter-sort" class="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+                  <option value="newest">最新更新</option>
+                  <option value="price_asc">价格从低到高</option>
+                  <option value="price_desc">价格从高到低</option>
+                  <option value="stock_desc">库存从多到少</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
+                  查询筛选
+                </button>
+                <button id="btn-reset-filter" type="button" class="rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  重置
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- 商品数据表格 -->
+          <section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                  <tr>
+                    <th class="px-5 py-3.5">商品信息</th>
+                    <th class="px-4 py-3.5">所属分类 / 游戏</th>
+                    <th class="px-4 py-3.5">磨损 / 稀有度</th>
+                    <th class="px-4 py-3.5">单价 (CNY)</th>
+                    <th class="px-4 py-3.5">库存</th>
+                    <th class="px-4 py-3.5">状态</th>
+                    <th class="px-5 py-3.5 text-right">管理操作</th>
+                  </tr>
+                </thead>
+                <tbody id="product-table-body" class="divide-y divide-gray-200">
+                  <tr>
+                    <td colspan="7" class="px-6 py-10 text-center text-gray-500">正在加载商品数据...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 分页底栏 -->
+            <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 bg-gray-50 px-5 py-3.5 text-xs text-gray-600">
+              <div id="pagination-summary">共 0 条记录</div>
+              <div class="flex items-center gap-2">
+                <button id="btn-prev-page" type="button" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">上一页</button>
+                <span id="pagination-current" class="px-2 font-medium text-gray-900">1 / 1</span>
+                <button id="btn-next-page" type="button" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">下一页</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 新增 / 编辑商品模态弹窗 -->
+  <div id="product-modal" class="hidden" style="position:fixed;inset:0;z-index:50;background:rgba(15,23,42,0.55);display:none;align-items:center;justify-content:center;padding:16px;">
+    <div class="w-full max-w-2xl rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden" style="max-height:92vh;display:flex;flex-direction:column;">
+      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <h2 id="modal-title" class="text-lg font-semibold text-gray-900">新增商品</h2>
+        <button id="btn-close-modal" type="button" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
+      </div>
+
+      <form id="product-form" class="p-6 space-y-4 overflow-y-auto">
+        <input type="hidden" id="form-product-id">
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">商品名称 *</label>
+            <input id="form-title" type="text" required placeholder="例如：AWP | 巨龙传说（崭新出厂）"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">唯一标识 (slug) *</label>
+            <input id="form-slug" type="text" required pattern="[a-z0-9-]+" placeholder="例如：cs2-awp-dragon-lore"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">所属分类 *</label>
+            <select id="form-category-id" required class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none"></select>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">所属游戏 *</label>
+            <select id="form-game" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+              <option value="CS2">CS2</option>
+              <option value="Dota2">Dota2</option>
+              <option value="Steam">Steam</option>
+            </select>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">适用区服</label>
+            <input id="form-region" type="text" value="国际服" placeholder="国际服 / 全球通用"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">销售单价 (元) *</label>
+            <input id="form-price" type="number" step="0.01" min="0" required placeholder="99.00"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">库存数量 *</label>
+            <input id="form-stock" type="number" step="1" min="0" required placeholder="10"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">销售状态</label>
+            <select id="form-status" class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+              <option value="on_sale">在售中 (on_sale)</option>
+              <option value="off_shelf">已下架 (off_shelf)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">展示图标 (Emoji)</label>
+            <input id="form-emoji" type="text" value="🔫" maxlength="8"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">磨损 / 规格</label>
+            <input id="form-wear" type="text" value="崭新出厂" placeholder="崭新出厂 / 久经沙场"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-700">稀有度 / 品质</label>
+            <input id="form-rarity" type="text" value="隐秘" placeholder="隐秘 / 至宝 / 受限"
+                   class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-700">一句话简介</label>
+          <input id="form-summary" type="text" placeholder="商品核心卖点简述..."
+                 class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none">
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-700">详细描述与交付说明</label>
+          <textarea id="form-description" rows="3" placeholder="请输入商品详细描述、磨损说明及发货方式..."
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 border-t border-gray-200 pt-4">
+          <button id="btn-cancel-modal" type="button" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">取消</button>
+          <button id="btn-save-product" type="submit" class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">保存商品数据</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script>
+    (function () {
+      let currentPage = 1;
+      const pageSize = 8;
+      let totalPages = 1;
+      let categoriesCache = [];
+      let productsCache = [];
+
+      const tbody = document.getElementById('product-table-body');
+      const modal = document.getElementById('product-modal');
+      const productForm = document.getElementById('product-form');
+
+      async function initPage() {
+        const user = await WZApi.ensureLoggedIn();
+        if (!user) return;
+        await Promise.all([loadStats(), loadCategories()]);
+        await loadProducts();
+      }
+
+      async function loadStats() {
+        try {
+          const stats = await WZApi.request('/api/stats');
+          document.getElementById('stat-total-products').textContent = stats.total_products;
+          document.getElementById('stat-on-sale').textContent = stats.on_sale_products;
+          document.getElementById('stat-off-shelf').textContent = stats.off_shelf_products;
+          document.getElementById('stat-total-stock').textContent = stats.total_stock;
+          document.getElementById('stat-total-categories').textContent = stats.total_categories;
+          document.getElementById('stat-total-value').textContent = '¥' + Number(stats.total_value || 0).toFixed(2);
+          document.getElementById('sidebar-db-engine').textContent = stats.db_engine;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function loadCategories() {
+        try {
+          categoriesCache = await WZApi.request('/api/categories');
+          const filterSelect = document.getElementById('filter-category');
+          const formSelect = document.getElementById('form-category-id');
+
+          filterSelect.innerHTML = '<option value="">全部分类</option>' +
+            categoriesCache.map(c => `<option value="${WZApi.escapeHtml(c.id)}">${WZApi.escapeHtml(c.name)} (${c.product_count})</option>`).join('');
+
+          formSelect.innerHTML = categoriesCache.map(c => `<option value="${WZApi.escapeHtml(c.id)}">${WZApi.escapeHtml(c.name)}</option>`).join('');
+        } catch (err) {
+          WZApi.showToast('加载分类失败：' + err.message, 'error');
+        }
+      }
+
+      async function loadProducts() {
+        const keyword = document.getElementById('filter-keyword').value.trim();
+        const category_id = document.getElementById('filter-category').value;
+        const game = document.getElementById('filter-game').value;
+        const status = document.getElementById('filter-status').value;
+        const sort = document.getElementById('filter-sort').value;
+
+        const qs = new URLSearchParams({
+          page: String(currentPage),
+          pageSize: String(pageSize),
+          sort
+        });
+        if (keyword) qs.set('keyword', keyword);
+        if (category_id) qs.set('category_id', category_id);
+        if (game) qs.set('game', game);
+        if (status) qs.set('status', status);
+
+        try {
+          const data = await WZApi.request('/api/products?' + qs.toString());
+          productsCache = data.items || [];
+          const pg = data.pagination || { page: 1, totalPages: 1, total: 0 };
+          totalPages = pg.totalPages || 1;
+          currentPage = pg.page || 1;
+
+          document.getElementById('pagination-summary').textContent =
+            `共 ${pg.total} 条商品记录 · 每页显示 ${pageSize} 条`;
+          document.getElementById('pagination-current').textContent = `${currentPage} / ${totalPages}`;
+          document.getElementById('btn-prev-page').disabled = currentPage <= 1;
+          document.getElementById('btn-next-page').disabled = currentPage >= totalPages;
+
+          renderProductRows(productsCache);
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">加载失败：${WZApi.escapeHtml(err.message)}</td></tr>`;
+        }
+      }
+
+      function renderProductRows(items) {
+        if (!items || items.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                没有找到符合当前筛选条件的商品数据，请尝试调整搜索条件或点击右上角「新增商品」。
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = items.map(item => {
+          const isOnSale = item.status === 'on_sale';
+          const statusBadge = isOnSale
+            ? '<span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">在售中</span>'
+            : '<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">已下架</span>';
+
+          const stockClass = Number(item.stock) <= 5 ? 'text-amber-600 font-semibold' : 'text-gray-900';
+
+          return `
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xl">${WZApi.escapeHtml(item.cover_emoji || '🎮')}</span>
+                  <div class="min-w-0">
+                    <p class="font-medium text-gray-900">${WZApi.escapeHtml(item.title)}</p>
+                    <p class="text-xs text-gray-500">${WZApi.escapeHtml(item.slug)} · ${WZApi.escapeHtml(item.summary || '')}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <p class="font-medium text-gray-800">${WZApi.escapeHtml(item.category_name || item.category_id)}</p>
+                <p class="text-xs text-gray-500">${WZApi.escapeHtml(item.game)} · ${WZApi.escapeHtml(item.region)}</p>
+              </td>
+              <td class="px-4 py-4">
+                <span class="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">${WZApi.escapeHtml(item.wear_level || '标准')}</span>
+                <span class="ml-1 text-xs text-gray-500">${WZApi.escapeHtml(item.rarity || '')}</span>
+              </td>
+              <td class="px-4 py-4 font-semibold text-gray-900">¥${Number(item.price).toFixed(2)}</td>
+              <td class="px-4 py-4 ${stockClass}">${item.stock} 件</td>
+              <td class="px-4 py-4">${statusBadge}</td>
+              <td class="px-5 py-4 text-right">
+                <div class="inline-flex items-center gap-1.5">
+                  <button type="button" data-action="edit" data-id="${WZApi.escapeHtml(item.id)}"
+                          class="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50">
+                    编辑
+                  </button>
+                  <button type="button" data-action="toggle-status" data-id="${WZApi.escapeHtml(item.id)}" data-next="${isOnSale ? 'off_shelf' : 'on_sale'}"
+                          class="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100">
+                    ${isOnSale ? '下架' : '上架'}
+                  </button>
+                  <button type="button" data-action="delete" data-id="${WZApi.escapeHtml(item.id)}" data-title="${WZApi.escapeHtml(item.title)}"
+                          class="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100">
+                    删除
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function openModal(product = null) {
+        document.getElementById('modal-title').textContent = product ? '编辑修改商品信息' : '新增商品信息';
+        document.getElementById('form-product-id').value = product ? product.id : '';
+        document.getElementById('form-title').value = product ? product.title : '';
+        document.getElementById('form-slug').value = product ? product.slug : '';
+        document.getElementById('form-category-id').value = product ? product.category_id : (categoriesCache[0]?.id || 'cat_cs2');
+        document.getElementById('form-game').value = product ? product.game : 'CS2';
+        document.getElementById('form-region').value = product ? product.region : '国际服';
+        document.getElementById('form-price').value = product ? Number(product.price).toFixed(2) : '';
+        document.getElementById('form-stock').value = product ? product.stock : '10';
+        document.getElementById('form-status').value = product ? product.status : 'on_sale';
+        document.getElementById('form-emoji').value = product ? (product.cover_emoji || '🎮') : '🔫';
+        document.getElementById('form-wear').value = product ? (product.wear_level || '崭新出厂') : '崭新出厂';
+        document.getElementById('form-rarity').value = product ? (product.rarity || '隐秘') : '隐秘';
+        document.getElementById('form-summary').value = product ? (product.summary || '') : '';
+        document.getElementById('form-description').value = product ? (product.description || '') : '';
+
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+      }
+
+      function closeModal() {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+      }
+
+      // 事件绑定
+      document.getElementById('btn-logout').addEventListener('click', () => WZApi.logout());
+      document.getElementById('btn-open-create').addEventListener('click', () => openModal(null));
+      document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+      document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
+
+      document.getElementById('search-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentPage = 1;
+        loadProducts();
+      });
+
+      document.getElementById('btn-reset-filter').addEventListener('click', () => {
+        document.getElementById('filter-keyword').value = '';
+        document.getElementById('filter-category').value = '';
+        document.getElementById('filter-game').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-sort').value = 'newest';
+        currentPage = 1;
+        loadProducts();
+      });
+
+      document.getElementById('btn-prev-page').addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          loadProducts();
+        }
+      });
+
+      document.getElementById('btn-next-page').addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          loadProducts();
+        }
+      });
+
+      tbody.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+
+        if (action === 'edit') {
+          const prod = productsCache.find(p => p.id === id);
+          if (prod) openModal(prod);
+        } else if (action === 'toggle-status') {
+          const nextStatus = btn.dataset.next;
+          try {
+            await WZApi.request(`/api/products/${encodeURIComponent(id)}/status`, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: nextStatus })
+            });
+            WZApi.showToast(nextStatus === 'on_sale' ? '商品已上架' : '商品已下架');
+            await Promise.all([loadProducts(), loadStats()]);
+          } catch (err) {
+            WZApi.showToast(err.message, 'error');
+          }
+        } else if (action === 'delete') {
+          const title = btn.dataset.title || id;
+          if (!window.confirm(`确定要从数据库删除商品「${title}」吗？此操作不可撤销。`)) return;
+          try {
+            await WZApi.request(`/api/products/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            WZApi.showToast('商品已成功删除');
+            await Promise.all([loadProducts(), loadStats(), loadCategories()]);
+          } catch (err) {
+            WZApi.showToast(err.message, 'error');
+          }
+        }
+      });
+
+      productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('form-product-id').value.trim();
+        const payload = {
+          title: document.getElementById('form-title').value.trim(),
+          slug: document.getElementById('form-slug').value.trim().toLowerCase(),
+          category_id: document.getElementById('form-category-id').value,
+          game: document.getElementById('form-game').value,
+          region: document.getElementById('form-region').value.trim(),
+          price: Number(document.getElementById('form-price').value),
+          stock: parseInt(document.getElementById('form-stock').value, 10),
+          status: document.getElementById('form-status').value,
+          cover_emoji: document.getElementById('form-emoji').value.trim() || '🎮',
+          wear_level: document.getElementById('form-wear').value.trim(),
+          rarity: document.getElementById('form-rarity').value.trim(),
+          summary: document.getElementById('form-summary').value.trim(),
+          description: document.getElementById('form-description').value.trim()
+        };
+
+        try {
+          if (id) {
+            await WZApi.request(`/api/products/${encodeURIComponent(id)}`, {
+              method: 'PUT',
+              body: JSON.stringify(payload)
+            });
+            WZApi.showToast('商品信息修改成功');
+          } else {
+            await WZApi.request('/api/products', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            WZApi.showToast('新商品添加成功');
+          }
+          closeModal();
+          await Promise.all([loadProducts(), loadStats(), loadCategories()]);
+        } catch (err) {
+          WZApi.showToast(err.message, 'error');
+        }
+      });
+
+      initPage();
+    })();
+  </script>
+</body>
+</html>
